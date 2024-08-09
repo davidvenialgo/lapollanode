@@ -1,8 +1,8 @@
 const express = require('express');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 const XLSX = require('xlsx');
+const path = require('path');
+
 
 const app = express();
 
@@ -10,26 +10,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs'); // Suponiendo que usas EJS como motor de plantillas
 
-// Ruta para la función "excel"
-app.get('/', async (req, res) => {
-    const tempFilePath = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-
+// Función para descargar y procesar el archivo Excel
+const processExcelFile = async (url) => {
     try {
-        // Descargar el archivo y guardarlo en un archivo temporal
         const response = await axios({
-            url: tempFilePath,
+            url: url,
             method: 'GET',
             responseType: 'arraybuffer',
         });
-        fs.writeFileSync(tempFilePath, response.data);
 
-        // Leer el archivo Excel
-        const workbook = XLSX.readFile(tempFilePath);
+        // Leer el archivo Excel desde el buffer
+        const workbook = XLSX.read(response.data);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        return XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    } catch (error) {
+        throw new Error('Error al descargar o procesar el archivo: ' + error.message);
+    }
+};
+
+// Ruta para la función "excel"
+app.get('/', async (req, res) => {
+    const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
+
+    try {
+        const rows = await processExcelFile(inputFileName);
         const data = [];
 
-        // Recorrer las filas del archivo Excel
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         rows.forEach((row, index) => {
             if (index !== 1) {
                 data.push({
@@ -40,10 +46,6 @@ app.get('/', async (req, res) => {
             }
         });
 
-        // Eliminar el archivo temporal
-        fs.unlinkSync(tempFilePath);
-
-        // Renderizar la vista con los datos
         res.render('index', { data });
     } catch (error) {
         console.error('Error al cargar el archivo:', error.message);
@@ -53,22 +55,13 @@ app.get('/', async (req, res) => {
 
 // Ruta para la función "resultados"
 app.get('/quienes-somos', async (req, res) => {
-    const tempFilePath = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
+    const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
 
     try {
-        const response = await axios({
-            url: tempFilePath,
-            method: 'GET',
-            responseType: 'arraybuffer',
-        });
-        fs.writeFileSync(tempFilePath, response.data);
-
-        const workbook = XLSX.readFile(tempFilePath);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = await processExcelFile(inputFileName);
         const datas = [];
 
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        rows.forEach((row, index) => {
+        rows.forEach((row) => {
             if (row && row.length > 0) {
                 datas.push({
                     'D': row[3],
@@ -79,7 +72,6 @@ app.get('/quienes-somos', async (req, res) => {
             }
         });
 
-        fs.unlinkSync(tempFilePath);
         res.render('quienes_somos', { datas });
     } catch (error) {
         console.error('Error al cargar el archivo:', error.message);
@@ -89,21 +81,12 @@ app.get('/quienes-somos', async (req, res) => {
 
 // Ruta para la función "mensual"
 app.get('/mensual', async (req, res) => {
-    const tempFilePath = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
+    const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
 
     try {
-        const response = await axios({
-            url: inputFileName,
-            method: 'GET',
-            responseType: 'arraybuffer',
-        });
-        fs.writeFileSync(tempFilePath, response.data);
-
-        const workbook = XLSX.readFile(tempFilePath);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = await processExcelFile(inputFileName);
         const datasm = [];
 
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         rows.forEach((row, index) => {
             if (index !== 1) {
                 datasm.push({
@@ -113,7 +96,6 @@ app.get('/mensual', async (req, res) => {
             }
         });
 
-        fs.unlinkSync(tempFilePath);
         res.render('mensual', { datasm });
     } catch (error) {
         console.error('Error al cargar el archivo:', error.message);
