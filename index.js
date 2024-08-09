@@ -9,6 +9,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs'); // Suponiendo que usas EJS como motor de plantillas
+app.set('views', path.join(__dirname, '../views'));
 
 // Función para descargar y procesar el archivo Excel
 const processExcelFile = async (url) => {
