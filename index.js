@@ -10,10 +10,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs'); // Suponiendo que usas EJS como motor de plantillas
 
+// Obtener el directorio temporal dependiendo del sistema operativo
+const tempDir = process.platform === 'win32' ? path.join(__dirname, 'temp') : '/tmp';
+if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+}
+
 // Ruta para la función "excel"
 app.get('/', async (req, res) => {
     const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-    const tempFilePath = path.join(__dirname, 'temp.xlsx');
+    const tempFilePath = path.join(tempDir, 'temp.xlsx');
 
     try {
         // Descargar el archivo y guardarlo en un archivo temporal
@@ -55,7 +61,7 @@ app.get('/', async (req, res) => {
 // Ruta para la función "resultados"
 app.get('/quienes-somos', async (req, res) => {
     const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-    const tempFilePath = path.join(__dirname, 'temp.xlsx');
+    const tempFilePath = path.join(tempDir, 'temp.xlsx');
 
     try {
         const response = await axios({
@@ -92,7 +98,7 @@ app.get('/quienes-somos', async (req, res) => {
 // Ruta para la función "mensual"
 app.get('/mensual', async (req, res) => {
     const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-    const tempFilePath = path.join(__dirname, 'temp.xlsx');
+    const tempFilePath = path.join(tempDir, 'temp.xlsx');
 
     try {
         const response = await axios({
