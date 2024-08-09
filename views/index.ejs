@@ -149,7 +149,7 @@
                 </thead>
                 <tbody>
                     <% data.forEach(function(row, index) { %>
-                        <% if (row['A'] != '') { %>
+                        <% if (row['A'] != null) { %>
                             <tr style="box-shadow: 10px 5px 5px rgb(255, 252, 252);">
                                 <th scope="row"><%= index + 1 %></th>
                                 <td><%= row['A'] %></td>
