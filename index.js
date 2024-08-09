@@ -17,7 +17,7 @@ app.get('/', async (req, res) => {
     try {
         // Descargar el archivo y guardarlo en un archivo temporal
         const response = await axios({
-            url: inputFileName,
+            url: tempFilePath,
             method: 'GET',
             responseType: 'arraybuffer',
         });
@@ -53,12 +53,11 @@ app.get('/', async (req, res) => {
 
 // Ruta para la función "resultados"
 app.get('/quienes-somos', async (req, res) => {
-    const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-    const tempFilePath = path.join(__dirname, 'temp.xlsx');
+    const tempFilePath = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
 
     try {
         const response = await axios({
-            url: inputFileName,
+            url: tempFilePath,
             method: 'GET',
             responseType: 'arraybuffer',
         });
@@ -90,8 +89,7 @@ app.get('/quienes-somos', async (req, res) => {
 
 // Ruta para la función "mensual"
 app.get('/mensual', async (req, res) => {
-    const inputFileName = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
-    const tempFilePath = path.join(__dirname, 'temp.xlsx');
+    const tempFilePath = "https://docs.google.com/spreadsheets/d/1P1nPtXT8c2SL8m8SF3c9Jx9D-1jt2BOe/export?format=xlsx";
 
     try {
         const response = await axios({
