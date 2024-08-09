@@ -1,8 +1,8 @@
 const express = require('express');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path'); // Asegúrate de importar el módulo 'path'
 const XLSX = require('xlsx');
-const path = require('path');
-
 
 const app = express();
 
@@ -24,6 +24,7 @@ const processExcelFile = async (url) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         return XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     } catch (error) {
+        console.error('Error al descargar o procesar el archivo:', error.message);
         throw new Error('Error al descargar o procesar el archivo: ' + error.message);
     }
 };
@@ -49,7 +50,7 @@ app.get('/', async (req, res) => {
         res.render('index', { data });
     } catch (error) {
         console.error('Error al cargar el archivo:', error.message);
-        res.status(500).send('Error al cargar el archivo.');
+        res.status(500).send('Error al cargar el archivo: ' + error.message);
     }
 });
 
@@ -99,7 +100,7 @@ app.get('/mensual', async (req, res) => {
         res.render('mensual', { datasm });
     } catch (error) {
         console.error('Error al cargar el archivo:', error.message);
-        res.status(500).send('Error al cargar el archivo.');
+        res.status(500).send('Error al cargar el archivo: ' + error.message);
     }
 });
 
