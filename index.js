@@ -39,13 +39,11 @@ app.get('/', async (req, res) => {
         const data = [];
 
         rows.forEach((row, index) => {
-            if (index !== 1) {
                 data.push({
                     'A': row[0],
                     'B': row[1],
                     'C': row[2]
                 });
-            }
         });
 
         res.render('index', { data });
@@ -90,12 +88,10 @@ app.get('/mensual', async (req, res) => {
         const datasm = [];
 
         rows.forEach((row, index) => {
-            if (index !== 1) {
                 datasm.push({
                     'I': row[8],
                     'J': row[9]
                 });
-            }
         });
 
         res.render('mensual', { datasm });
